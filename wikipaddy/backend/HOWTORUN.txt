@@ -1,0 +1,19 @@
+1. create new folder ` wikipaddy `
+2. open foldernya pake vscode
+3. open new terminal di vscode
+4. ` go mod init wikipaddy `
+5. ` go get github.com/PuerkitoBio/goquery `
+7. create new file ` bfs.go ` & ` ids.go `
+8. copy code dari zip ini ke folder kalian (bfs ke bfs, ids ke ids)
+
+for bfs:
+` go run bfs.go [start path] [end path] `
+    ex: ` go run bfs.go "https://en.wikipedia.org/wiki/Bandung_Institute_of_Technology" "https://en.wikipedia.org/wiki/Portugal" `
+
+for ids:
+` go run ids.go [start path] [end path] `
+    ex: ` go run ids.go "https://en.wikipedia.org/wiki/Bandung_Institute_of_Technology" "https://en.wikipedia.org/wiki/Portugal" `
+
+
+NOTES:
+- pastiin udah install golang (cara check: buka terminal/cmd manapun, ketik: ` go version `. kalo muncul versinya artinya udah keinstall)
