@@ -1,13 +1,10 @@
-package main
+package bfs
 
 import (
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -24,7 +21,7 @@ type PageLinks struct {
 func NewPageLinks() *PageLinks {
 	return &PageLinks{
 		links: make(map[string][]string),
-	}
+	}	
 }
 
 // Add adds a link to the page
@@ -66,6 +63,7 @@ type WikiRacer struct {
 	queue      []string
 	pageLinks  *PageLinks
 	pathToLink map[string]string
+	linksExamined int // buat ngecek berapa banyak link yang udah di cek
 }
 
 // NewWikiRacer creates a new WikiRacer instance
@@ -82,6 +80,7 @@ func NewWikiRacer(startURL, endURL string) *WikiRacer {
 
 // FindShortestPath starts the BFS to find the shortest path
 func (wr *WikiRacer) FindShortestPath() ([]string, error) {
+	wr.linksExamined = 0 // Inisialisasi jumlah link yang diperiksa
 	for len(wr.queue) > 0 {
 		currentPage := wr.queue[0]
 		wr.queue = wr.queue[1:]
@@ -107,6 +106,11 @@ func (wr *WikiRacer) FindShortestPath() ([]string, error) {
 		}
 	}
 	return nil, fmt.Errorf("no path found from %s to %s", wr.startURL, wr.endURL)
+}
+
+// getLinksExamined 
+func (wr *WikiRacer) LinksExamined() int {
+	return wr.linksExamined
 }
 
 // fetchLinks retrieves the distinct Wikipedia links from the given page
@@ -138,6 +142,8 @@ func (wr *WikiRacer) fetchLinks(pageURL string) ([]string, error) {
 		}
 	})
 
+	wr.linksExamined += len(links)
+
 	return links, nil
 }
 
@@ -148,26 +154,4 @@ func (wr *WikiRacer) buildPath() []string {
 		path = append([]string{link}, path...)
 	}
 	return path
-}
-
-// main function to simulate input and execute the WikiRacer
-func main() {
-    if len(os.Args) < 3 {
-        fmt.Println("Usage: mywikiracer <startURL> <endURL>")
-        os.Exit(1)
-    }
-    start := os.Args[1]
-    end := os.Args[2]
-
-    racer := NewWikiRacer(start, end)
-    startTime := time.Now()
-
-    path, err := racer.FindShortestPath()
-    if err != nil {
-        log.Fatalf("Error finding path: %v", err)
-    }
-
-    duration := time.Since(startTime)
-    fmt.Printf("Path found: %v\n", path)
-    fmt.Printf("Time taken: %v\n", duration)
 }

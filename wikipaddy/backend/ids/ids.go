@@ -1,12 +1,9 @@
-package main
+package ids
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strings"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -17,6 +14,7 @@ type WikiRacerIDS struct {
 	visited    map[string]int
 	pageLinks  map[string][]string
 	maxDepth   int
+	linksExamined int // Number of links examined
 }
 
 func NewWikiRacerIDS(startURL, endURL string) *WikiRacerIDS {
@@ -62,6 +60,7 @@ func (wr *WikiRacerIDS) depthLimitedSearch(currentURL string, depth int) (bool, 
 
 	// Mark the current page as visited at the current depth.
 	wr.visited[currentURL] = depth
+	wr.linksExamined++
 
 	links, err := wr.fetchLinks(currentURL)
 	if err != nil {
@@ -93,22 +92,6 @@ func (wr *WikiRacerIDS) FindShortestPathUsingIDS() ([]string, error) {
 	}
 }
 
-func main() {
-	if len(os.Args) < 3 {
-		fmt.Println("Usage: <program> <startURL> <endURL>")
-		os.Exit(1)
-	}
-
-	startURL, endURL := os.Args[1], os.Args[2]
-	wr := NewWikiRacerIDS(startURL, endURL)
-
-	startTime := time.Now()
-	path, err := wr.FindShortestPathUsingIDS()
-	if err != nil {
-		log.Fatalf("Error finding path: %v", err)
-	}
-	duration := time.Since(startTime)
-
-	fmt.Printf("Path found: %v\n", path)
-	fmt.Printf("Time taken: %v\n", duration)
+func (wr *WikiRacerIDS) LinksExamined() int {
+    return wr.linksExamined
 }
