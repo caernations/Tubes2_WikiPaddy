@@ -81,31 +81,68 @@ func NewWikiRacer(startURL, endURL string) *WikiRacer {
 
 // FindShortestPath starts the BFS to find the shortest path
 func (wr *WikiRacer) FindShortestPath() ([]string, error) {
-	for len(wr.queue) > 0 {
-		currentPage := wr.queue[0]
-		wr.queue = wr.queue[1:]
-		wr.linksExamined++
-		if currentPage == wr.endURL {
-			return wr.buildPath(), nil
-		}
+    for len(wr.queue) > 0 {
+        currentPage := wr.queue[0]
+        wr.queue = wr.queue[1:]
+        wr.linksExamined++
 
-		links, err := wr.fetchLinks(currentPage)
-		if err != nil {
-			return nil, err
-		}
+        // Menyimpan jalur dari startURL hingga currentPage
+        var path []string
+        link := currentPage
+        for link != wr.startURL {
+            path = append([]string{extractArticleTitle(link)}, path...)
+            link = wr.pathToLink[link]
+        }
+        path = append([]string{extractArticleTitle(wr.startURL)}, path...)
 
-		for _, link := range links {
-			if !wr.visited[link] {
-				wr.visited[link] = true
-				wr.queue = append(wr.queue, link)
-				wr.pathToLink[link] = currentPage
-				if link == wr.endURL {
-					return wr.buildPath(), nil
-				}
-			}
-		}
-	}
-	return nil, fmt.Errorf("no path found from %s to %s", wr.startURL, wr.endURL)
+        // Mencetak jalur dari startURL hingga currentPage
+        fmt.Println(formatPath(path))
+
+        if currentPage == wr.endURL {
+            return wr.buildPath(), nil
+        }
+
+        links, err := wr.fetchLinks(currentPage)
+        if err != nil {
+            return nil, err
+        }
+
+        for _, link := range links {
+            if !wr.visited[link] {
+                wr.visited[link] = true
+                wr.queue = append(wr.queue, link)
+                wr.pathToLink[link] = currentPage
+                if link == wr.endURL {
+                    return wr.buildPath(), nil
+                }
+            }
+        }
+    }
+    return nil, fmt.Errorf("no path found from %s to %s", wr.startURL, wr.endURL)
+}
+
+// extractArticleTitle extracts the title of the Wikipedia article from the URL
+func extractArticleTitle(url string) string {
+    // Menghapus "https://en.wikipedia.org/wiki/" dari awal URL
+    title := strings.TrimPrefix(url, "https://en.wikipedia.org/wiki/")
+
+    // Mencari index dari tanda "/" pertama setelah "/wiki/"
+    index := strings.Index(title, "/")
+    if index != -1 {
+        // Jika ditemukan "/", ambil bagian sebelumnya sebagai judul artikel
+        title = title[:index]
+    }
+
+    return title
+}
+
+// formatPath mengonversi slice path ke string dengan format judul artikel
+func formatPath(path []string) string {
+    var formattedPath []string
+    for _, url := range path {
+        formattedPath = append(formattedPath, extractArticleTitle(url))
+    }
+    return strings.Join(formattedPath, " -> ")
 }
 
 // getLinksExamined 
