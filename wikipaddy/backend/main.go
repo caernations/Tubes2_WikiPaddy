@@ -47,17 +47,23 @@ func main() {
 	}
 
 	fmt.Printf("Algorithm Used: %s\n", algorithm)
-	if err != nil {
+	if err != nil {//
 		log.Fatalf("Error finding path: %v", err)
 	} else {
-		fmt.Printf("Number of links examined: %d\n", linksExamined)
+		fmt.Printf("Jumlah artikel yang diperiksa: %d\n", linksExamined)
+		fmt.Println("Jumlah artikel yang dilalui: ", len(path)-1)
 		fmt.Println("Path route:")
 		fmt.Printf("[")
 		for i := 0; i < len(path)-1; i++ {
+			parts := strings.Split(path[i], "/")
+			rute := parts[len(parts)-1]
+			
 			if i < len(path)-2 {
-				fmt.Printf("%s -> ", path[i])
+				fmt.Printf("%s -> ", rute)
 			} else {
-				fmt.Printf("%s -> %s", path[i], path[i+1])
+				parts2 := strings.Split(path[i+1], "/")
+				rute2 := parts2[len(parts2)-1]
+				fmt.Printf("%s -> %s", rute, rute2)
 			}
 		}
 		fmt.Printf("]\n")

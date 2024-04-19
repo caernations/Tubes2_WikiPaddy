@@ -75,16 +75,16 @@ func NewWikiRacer(startURL, endURL string) *WikiRacer {
 		queue:      []string{startURL},
 		pageLinks:  NewPageLinks(),
 		pathToLink: make(map[string]string),
+		linksExamined : 0,
 	}
 }
 
 // FindShortestPath starts the BFS to find the shortest path
 func (wr *WikiRacer) FindShortestPath() ([]string, error) {
-	wr.linksExamined = 0 // Inisialisasi jumlah link yang diperiksa
 	for len(wr.queue) > 0 {
 		currentPage := wr.queue[0]
 		wr.queue = wr.queue[1:]
-
+		wr.linksExamined++
 		if currentPage == wr.endURL {
 			return wr.buildPath(), nil
 		}
@@ -142,16 +142,21 @@ func (wr *WikiRacer) fetchLinks(pageURL string) ([]string, error) {
 		}
 	})
 
-	wr.linksExamined += len(links)
-
 	return links, nil
 }
 
 // buildPath reconstructs the path from the start URL to the end URL
 func (wr *WikiRacer) buildPath() []string {
-	path := []string{}
-	for link := wr.endURL; link != ""; link = wr.pathToLink[link] {
-		path = append([]string{link}, path...)
-	}
-	return path
+	var path []string
+    currentPage := wr.endURL
+
+    for currentPage != wr.startURL {
+        path = append([]string{currentPage}, path...) // Tambahkan currentPage ke awal slice path
+        currentPage = wr.pathToLink[currentPage]      // Perbarui currentPage dengan link sebelumnya dalam pathToLink
+    }
+
+    // Tambahkan startURL ke awal path
+    path = append([]string{wr.startURL}, path...)
+
+    return path
 }

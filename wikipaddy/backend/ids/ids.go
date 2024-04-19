@@ -24,6 +24,7 @@ func NewWikiRacerIDS(startURL, endURL string) *WikiRacerIDS {
 		visited:   make(map[string]int),
 		pageLinks: make(map[string][]string),
 		maxDepth:  0,
+		linksExamined: 1,
 	}
 }
 
@@ -54,6 +55,7 @@ func (wr *WikiRacerIDS) depthLimitedSearch(currentURL string, depth int) (bool, 
 	if depth > wr.maxDepth {
 		return false, nil
 	}
+
 	if currentURL == wr.endURL {
 		return true, []string{wr.endURL}
 	}
