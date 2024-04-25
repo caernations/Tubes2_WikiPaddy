@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 	"wikipaddy/bfs"
+	"wikipaddy/bi_bfs"
 	"wikipaddy/ids"
 )
 
@@ -33,21 +34,28 @@ func main() {
 		bfsInstance := bfs.NewWikiRacer(startURL, endURL)
 		startTime := time.Now()
 		path, err = bfsInstance.FindShortestPath()
-		linksExamined = bfsInstance.LinksExamined()
 		duration = time.Since(startTime)
+		linksExamined = bfsInstance.LinksExamined()
+
+	case "bi-bfs":
+		biBFSInstance := bi_bfs.NewWikiRacer(startURL, endURL)
+		startTime := time.Now()
+		path, err = biBFSInstance.FindShortestPath()
+		duration = time.Since(startTime)
+		linksExamined = biBFSInstance.LinksExamined()
 	case "ids":
 		idsInstance := ids.NewWikiRacerIDS(startURL, endURL)
 		startTime := time.Now()
 		path, err = idsInstance.FindShortestPathUsingIDS()
-		linksExamined = idsInstance.LinksExamined()
 		duration = time.Since(startTime)
+		linksExamined = idsInstance.LinksExamined()
 	default:
 		fmt.Println("Unknown algorithm. Please choose 'bfs' or 'ids'.")
 		os.Exit(1)
 	}
 
 	fmt.Printf("Algorithm Used: %s\n", algorithm)
-	if err != nil {//
+	if err != nil { //
 		log.Fatalf("Error finding path: %v", err)
 	} else {
 		fmt.Printf("Jumlah artikel yang diperiksa: %d\n", linksExamined)
@@ -57,7 +65,7 @@ func main() {
 		for i := 0; i < len(path)-1; i++ {
 			parts := strings.Split(path[i], "/")
 			rute := parts[len(parts)-1]
-			
+
 			if i < len(path)-2 {
 				fmt.Printf("%s -> ", rute)
 			} else {
@@ -67,7 +75,7 @@ func main() {
 			}
 		}
 		fmt.Printf("]\n")
-		
+
 		fmt.Printf("Time Taken (ms): %v\n", duration.Milliseconds())
 	}
 }
