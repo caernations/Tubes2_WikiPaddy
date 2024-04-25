@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -13,9 +15,9 @@ type WikiRacerIDS struct {
 	startURL      string
 	endURL        string
 	visited       map[string]int
-	pageLinks     map[string][]string
 	maxDepth      int
 	linksExamined int // Number of links examined
+	cache         *sync.Map
 }
 
 func NewWikiRacerIDS(startURL, endURL string) *WikiRacerIDS {
@@ -23,13 +25,19 @@ func NewWikiRacerIDS(startURL, endURL string) *WikiRacerIDS {
 		startURL:      startURL,
 		endURL:        endURL,
 		visited:       make(map[string]int),
-		pageLinks:     make(map[string][]string),
 		maxDepth:      0,
-		linksExamined: 1,
+		linksExamined: 0,
+		cache:         &sync.Map{},
 	}
 }
 
 func (wr *WikiRacerIDS) fetchLinks(pageURL string) ([]string, error) {
+	if links, ok := wr.cache.Load(pageURL); ok {
+		if cachedLinks, ok := links.([]string); ok {
+			return cachedLinks, nil
+		}
+	}
+
 	resp, err := http.Get(pageURL)
 	if err != nil {
 		return nil, err
@@ -49,10 +57,13 @@ func (wr *WikiRacerIDS) fetchLinks(pageURL string) ([]string, error) {
 			links = append(links, baseURL+href)
 		}
 	})
+
+	wr.cache.Store(pageURL, links)
+
 	return links, nil
 }
 
-func (wr *WikiRacerIDS) depthLimitedSearch(currentURL string, depth int, path []string) (bool, []string) {
+func (wr *WikiRacerIDS) depthLimitedSearch(currentURL string, depth int, path []string, timeoutCh <-chan time.Time) (bool, []string) {
 	if depth > wr.maxDepth {
 		return false, nil
 	}
@@ -79,27 +90,48 @@ func (wr *WikiRacerIDS) depthLimitedSearch(currentURL string, depth int, path []
 		return false, nil
 	}
 
+	// Check if endURL is among the newly fetched links
+	for _, link := range links {
+		if link == wr.endURL {
+			// Append endURL to the path and return
+			path = append(path, wr.endURL)
+			return true, path
+		}
+	}
+
 	for _, link := range links {
 		if prevDepth, visited := wr.visited[link]; !visited || depth+1 < prevDepth {
-			found, path := wr.depthLimitedSearch(link, depth+1, path)
+			found, path := wr.depthLimitedSearch(link, depth+1, path, timeoutCh)
 			if found {
-				// Return the complete path
 				return true, path
 			}
 		}
 	}
 
-	return false, nil
+	select {
+	case <-timeoutCh:
+		return false, nil
+	default:
+		return false, nil
+	}
 }
 
 func (wr *WikiRacerIDS) FindShortestPathUsingIDS() ([]string, error) {
+	timeout := time.After(5 * time.Minute) // Set timeout to 5 minutes
+	timeoutCh := make(chan time.Time)
+
 	for {
-		found, path := wr.depthLimitedSearch(wr.startURL, 0, []string{})
-		if found {
-			return path, nil
+		select {
+		case <-timeout:
+			return nil, fmt.Errorf("timeout exceeded (5 minutes)")
+		default:
+			found, path := wr.depthLimitedSearch(wr.startURL, 0, []string{}, timeoutCh)
+			if found {
+				return path, nil
+			}
+			wr.maxDepth++
+			wr.visited = make(map[string]int) // Reset visited for the next iteration
 		}
-		wr.maxDepth++
-		wr.visited = make(map[string]int) // Reset visited for the next iteration
 	}
 }
 
@@ -123,7 +155,7 @@ func extractArticleTitle(url string) string {
 }
 
 // printPath prints the path from startURL to currentURL
-func printPath(path []string){
+func printPath(path []string) {
 	if len(path) == 0 {
 		return
 	}

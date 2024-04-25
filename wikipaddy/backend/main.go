@@ -76,7 +76,7 @@ func main() {
 		}
 		fmt.Printf("]\n")
 
-		fmt.Printf("Time Taken (ms): %v\n", duration.Milliseconds())
+		fmt.Printf("Time Taken: %v minutes %v ms\n", duration.Minutes(), duration.Milliseconds()%1000)
 	}
 }
 
