@@ -1,0 +1,89 @@
+.footer {
+    background: white;
+    height: 30vh;
+    transition: 0.5s;
+}
+
+.footer.dark {
+    background: #535353;
+    height: 30vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-content {
+    width: 100%;
+    height: 60%;
+    background: #d9d9d9;
+    transition: 0.5s;
+    padding-top: 2%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.footer-content.dark {
+    color: white;
+    background: #1e1e1e;
+}
+
+.waves {
+    height: 100px;
+}
+
+.wave {
+    position: absolute;
+    background: url(../../assets/wave_light.png);
+    width: 100%;
+    height: 100px;
+    background-size: 1000px 100px;
+    transition: 0.5s;
+}
+
+.wave.dark {
+    background: url(../../assets/wave_dark.png);
+    background-size: 1000px 100px;
+}
+
+@keyframes animateWave {
+    0% {
+        background-position-x: 1000px;
+    }
+    100% {
+        background-position-x: 0px;
+    }
+    
+}
+
+.wave#wave1 {
+    opacity: 1;
+    z-index: 200;
+    animation: animateWave 4s linear infinite;
+}
+
+@keyframes animateWave_02 {
+    0% {
+        background-position-x: 0px;
+    }
+    100% {
+        background-position-x: 1000px;
+    }
+    
+}
+
+.wave#wave2 {
+    opacity: 0.5;
+    z-index: 199;
+    animation: animateWave_02 3s linear infinite;
+}
+
+.wave#wave3 {
+    opacity: 0.2;
+    z-index: 199;
+    animation: animateWave 3s linear infinite;
+}
+
+.wave#wave4 {
+    opacity: 0.7;
+    z-index: 198;
+    animation: animateWave_02 4s linear infinite;
+}

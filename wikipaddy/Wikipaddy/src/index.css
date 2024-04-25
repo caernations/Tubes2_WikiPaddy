@@ -1,0 +1,33 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+.container {
+    width: 100%;
+    height: 100vh;
+    background-color: #ffffff;
+    transition: 0.5s;
+}
+.container.dark {
+    position: relative;
+    background: #535353;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #535353;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #1e1e1e;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ffffff;
+}
