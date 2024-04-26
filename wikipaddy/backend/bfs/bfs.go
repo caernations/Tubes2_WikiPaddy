@@ -36,7 +36,7 @@ func HandleRequestBFS(w http.ResponseWriter, r *http.Request) {
     endURL := "https://en.wikipedia.org/wiki/" + endTitle
 
     wikiRacer := NewWikiRacer(startURL, endURL)
-    path, err := wikiRacer.FindShortestPath()
+    path, waktuEksekusi ,err := wikiRacer.FindShortestPath()
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -99,18 +99,12 @@ func NewWikiRacer(startURL, endURL string) *WikiRacer {
 	}
 }
 
-func (wr *WikiRacer) FindShortestPath() ([]string, error) {
-	// timeout := 5 * time.Minute // Set timeout 5 menit
+func (wr *WikiRacer) FindShortestPath() ([]string, time.Duration, error) {
+	startTime := time.Now()
 
 	for len(wr.queue) > 0 {
 		currentPage := wr.queue[0]
 		wr.queue = wr.queue[1:]
-		
-
-		// Check if elapsed time exceeds the timeout
-		// if time.Since(startTime) > timeout {
-		// 	return nil, fmt.Errorf("search exceeded time limit of %v", timeout)
-		// }
 
 		var path []string
 		link := currentPage
@@ -119,17 +113,16 @@ func (wr *WikiRacer) FindShortestPath() ([]string, error) {
 			link = wr.pathToLink[link]
 		}
 		path = append([]string{extractArticleTitle(wr.startURL)}, path...)
-		
-		// Print the path from startURL to currentURL
-		fmt.Println(formatPath(path))
-		
+
+		// fmt.Println("Path:", formatPath(path))
+
 		if currentPage == wr.endURL {
-			return wr.buildPath(), nil
+			return wr.buildPath(), time.Since(startTime), nil
 		}
 
 		links, err := wr.fetchLinks(currentPage)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
 		for _, link := range links {
@@ -139,14 +132,15 @@ func (wr *WikiRacer) FindShortestPath() ([]string, error) {
 				wr.queue = append(wr.queue, link)
 				wr.pathToLink[link] = currentPage
 				if link == wr.endURL {
-					return wr.buildPath(), nil
+					return wr.buildPath(), time.Since(startTime), nil
 				}
 			}
 		}
 	}
 
-	return nil, fmt.Errorf("no path found from %s to %s", wr.startURL, wr.endURL)
+	return nil, 0, fmt.Errorf("no path found from %s to %s", wr.startURL, wr.endURL)
 }
+
 
 func (wr *WikiRacer) fetchLinks(pageURL string) ([]string, error) {
 	resp, err := wr.getWithTimeout(pageURL, 30*time.Second) // Set timeout 30 detik
