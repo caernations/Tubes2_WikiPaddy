@@ -1,6 +1,7 @@
 package bfs
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -8,11 +9,40 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	// "github.com/gorilla/mux"
+    // "github.com/rs/cors"
 )
 
 type PageLinks struct {
 	mu    sync.Mutex
 	links map[string][]string
+}
+
+type Request struct {
+    StartURL string `json:"start_url"`
+    EndURL   string `json:"end_url"`
+}
+
+func HandleRequestBFS(w http.ResponseWriter, r *http.Request) {
+    startTitle := r.URL.Query().Get("start_title")
+    endTitle := r.URL.Query().Get("end_title")
+
+    if startTitle == "" || endTitle == "" {
+        http.Error(w, "start_title and end_title are required", http.StatusBadRequest)
+        return
+    }
+
+    startURL := "https://en.wikipedia.org/wiki/" + startTitle
+    endURL := "https://en.wikipedia.org/wiki/" + endTitle
+
+    wikiRacer := NewWikiRacer(startURL, endURL)
+    path, err := wikiRacer.FindShortestPath()
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    json.NewEncoder(w).Encode(path)
 }
 
 func NewPageLinks() *PageLinks {
@@ -70,18 +100,17 @@ func NewWikiRacer(startURL, endURL string) *WikiRacer {
 }
 
 func (wr *WikiRacer) FindShortestPath() ([]string, error) {
-	timeout := 5 * time.Minute // Set timeout 5 menit
-	startTime := time.Now()
+	// timeout := 5 * time.Minute // Set timeout 5 menit
 
 	for len(wr.queue) > 0 {
 		currentPage := wr.queue[0]
 		wr.queue = wr.queue[1:]
-		wr.linksExamined++
+		
 
 		// Check if elapsed time exceeds the timeout
-		if time.Since(startTime) > timeout {
-			return nil, fmt.Errorf("search exceeded time limit of %v", timeout)
-		}
+		// if time.Since(startTime) > timeout {
+		// 	return nil, fmt.Errorf("search exceeded time limit of %v", timeout)
+		// }
 
 		var path []string
 		link := currentPage
@@ -105,6 +134,7 @@ func (wr *WikiRacer) FindShortestPath() ([]string, error) {
 
 		for _, link := range links {
 			if !wr.visited[link] {
+				wr.linksExamined++
 				wr.visited[link] = true
 				wr.queue = append(wr.queue, link)
 				wr.pathToLink[link] = currentPage

@@ -7,8 +7,11 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"encoding/json"
 
 	"github.com/PuerkitoBio/goquery"
+	// "github.com/gorilla/mux"
+    // "github.com/rs/cors"
 )
 
 type WikiRacerIDS struct {
@@ -18,6 +21,33 @@ type WikiRacerIDS struct {
 	maxDepth      int
 	linksExamined int // Number of links examined
 	cache         *sync.Map
+}
+
+type Request struct {
+    StartURL string `json:"start_url"`
+    EndURL   string `json:"end_url"`
+}
+
+func HandleRequestIDS(w http.ResponseWriter, r *http.Request) {
+    startTitle := r.URL.Query().Get("start_title")
+    endTitle := r.URL.Query().Get("end_title")
+
+    if startTitle == "" || endTitle == "" {
+        http.Error(w, "start_title and end_title are required", http.StatusBadRequest)
+        return
+    }
+
+    startURL := "https://en.wikipedia.org/wiki/" + startTitle
+    endURL := "https://en.wikipedia.org/wiki/" + endTitle
+
+    wikiRacer := NewWikiRacerIDS(startURL, endURL)
+    path, err := wikiRacer.FindShortestPathUsingIDS()
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    json.NewEncoder(w).Encode(path)
 }
 
 func NewWikiRacerIDS(startURL, endURL string) *WikiRacerIDS {
@@ -92,6 +122,7 @@ func (wr *WikiRacerIDS) depthLimitedSearch(currentURL string, depth int, path []
 
 	// Check if endURL is among the newly fetched links
 	for _, link := range links {
+		wr.linksExamined++
 		if link == wr.endURL {
 			// Append endURL to the path and return
 			path = append(path, wr.endURL)
@@ -117,21 +148,21 @@ func (wr *WikiRacerIDS) depthLimitedSearch(currentURL string, depth int, path []
 }
 
 func (wr *WikiRacerIDS) FindShortestPathUsingIDS() ([]string, error) {
-	timeout := time.After(5 * time.Minute) // Set timeout to 5 minutes
+	// timeout := time.After(5 * time.Minute) // Set timeout to 5 minutes
 	timeoutCh := make(chan time.Time)
 
 	for {
-		select {
-		case <-timeout:
-			return nil, fmt.Errorf("timeout exceeded (5 minutes)")
-		default:
-			found, path := wr.depthLimitedSearch(wr.startURL, 0, []string{}, timeoutCh)
-			if found {
-				return path, nil
-			}
-			wr.maxDepth++
-			wr.visited = make(map[string]int) // Reset visited for the next iteration
+		// select {
+		// case <-timeout:
+		// 	return nil, fmt.Errorf("timeout exceeded (5 minutes)")
+		// default:
+		found, path := wr.depthLimitedSearch(wr.startURL, 0, []string{}, timeoutCh)
+		if found {
+			return path, nil
 		}
+		wr.maxDepth++
+		wr.visited = make(map[string]int) // Reset visited for the next iteration
+
 	}
 }
 
