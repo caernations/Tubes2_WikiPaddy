@@ -70,18 +70,10 @@ func NewWikiRacer(startURL, endURL string) *WikiRacer {
 }
 
 func (wr *WikiRacer) FindShortestPath() ([]string, error) {
-	timeout := 5 * time.Minute // Set timeout 5 menit
-	startTime := time.Now()
-
 	for len(wr.queue) > 0 {
 		currentPage := wr.queue[0]
 		wr.queue = wr.queue[1:]
 		wr.linksExamined++
-
-		// Check if elapsed time exceeds the timeout
-		if time.Since(startTime) > timeout {
-			return nil, fmt.Errorf("search exceeded time limit of %v", timeout)
-		}
 
 		var path []string
 		link := currentPage

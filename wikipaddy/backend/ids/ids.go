@@ -117,21 +117,15 @@ func (wr *WikiRacerIDS) depthLimitedSearch(currentURL string, depth int, path []
 }
 
 func (wr *WikiRacerIDS) FindShortestPathUsingIDS() ([]string, error) {
-	timeout := time.After(5 * time.Minute) // Set timeout to 5 minutes
 	timeoutCh := make(chan time.Time)
 
 	for {
-		select {
-		case <-timeout:
-			return nil, fmt.Errorf("timeout exceeded (5 minutes)")
-		default:
-			found, path := wr.depthLimitedSearch(wr.startURL, 0, []string{}, timeoutCh)
-			if found {
-				return path, nil
-			}
-			wr.maxDepth++
-			wr.visited = make(map[string]int) // Reset visited for the next iteration
+		found, path := wr.depthLimitedSearch(wr.startURL, 0, []string{}, timeoutCh)
+		if found {
+			return path, nil
 		}
+		wr.maxDepth++
+		wr.visited = make(map[string]int) // Reset visited for the next iteration
 	}
 }
 
