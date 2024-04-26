@@ -19,11 +19,11 @@ const App = () => {
 
   return (
     <div className={`container ${theme}`}>
-      <Navbar theme={theme} setTheme={setTheme}/>
-      <Project theme={theme} setTheme={setTheme}/>
-      <About theme={theme} setTheme={setTheme}/>
-      <What theme={theme} setTheme={setTheme}/>
-      <Footer theme={theme} setTheme={setTheme}/>
+      <Navbar theme={theme} setTheme={setTheme} />
+      <Project id="project" theme={theme} setTheme={setTheme} />
+      <About id="about" theme={theme} setTheme={setTheme} />
+      <What id="what" theme={theme} setTheme={setTheme} />
+      <Footer theme={theme} setTheme={setTheme} />
     </div>
   )
 }

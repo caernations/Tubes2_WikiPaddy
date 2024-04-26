@@ -38,7 +38,16 @@
     flex: 1;
     list-style: none;
     text-align: center;
-    margin-left: 45%;
+    margin-left: 55%;
+  }
+
+  .navlink a {
+    text-decoration: none;
+    color: black;
+  }
+
+  .navlink a:hover {
+    color: white;
   }
   
   .navlink {
@@ -50,6 +59,15 @@
   
   .navlink.dark {
     color: #f1efef;
+  }
+
+  .navlink.dark a {
+    text-decoration: none;
+    color: white
+  }
+
+  .navlink.dark a:hover {
+    color: #535353;
   }
   
   .toggle {

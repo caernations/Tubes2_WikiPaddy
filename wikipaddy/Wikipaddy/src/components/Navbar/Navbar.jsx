@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-scroll';
 import './Navbar.css';
 import light from '../../assets/sun.png';
 import dark from '../../assets/moon.png';
@@ -31,10 +32,15 @@ const Navbar = ({ theme, setTheme }) => {
       <h3 className={`logo ${theme}`}>Wikipaddy</h3>
 
       <ul>
-        <li className={`navlink ${theme}`}>Home</li>
-        <li className={`navlink ${theme}`}>About Us</li>
-        <li className={`navlink ${theme}`}>Information</li>
-        <li className={`navlink ${theme}`}>How to Use</li>
+      <li className={`navlink ${theme}`}>
+          <Link to='project' spy={true} smooth={true} duration={500}>Home</Link>
+        </li>
+        <li className={`navlink ${theme}`}>
+          <Link to='about' spy={true} smooth={true} duration={500}>About Us</Link>
+        </li>
+        <li className={`navlink ${theme}`}>
+          <Link to='what' spy={true} smooth={true} duration={500}>Information</Link>
+        </li>
       </ul>
 
       <img onClick={toggle_mode} src={theme === 'light' ? light : dark} alt="" className='toggle'/>
