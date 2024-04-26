@@ -162,7 +162,6 @@ func (wr *WikiRacerIDS) FindShortestPathUsingIDS() ([]string, error) {
 		}
 		wr.maxDepth++
 		wr.visited = make(map[string]int) // Reset visited for the next iteration
-
 	}
 }
 
