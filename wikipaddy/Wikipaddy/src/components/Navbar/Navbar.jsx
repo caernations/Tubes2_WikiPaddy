@@ -39,7 +39,7 @@ const Navbar = ({ theme, setTheme }) => {
           <Link to='about' spy={true} smooth={true} duration={500}>About Us</Link>
         </li>
         <li className={`navlink ${theme}`}>
-          <Link to='what' spy={true} smooth={true} duration={500} offset={70}>Information</Link>
+          <Link to='what' spy={true} smooth={true} duration={500} offset={80}>Information</Link>
         </li>
       </ul>
 
