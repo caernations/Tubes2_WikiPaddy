@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 	"encoding/json"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	// "github.com/gorilla/mux"
@@ -37,7 +38,7 @@ func HandleRequestBiBFS(w http.ResponseWriter, r *http.Request) {
     endURL := "https://en.wikipedia.org/wiki/" + endTitle
 
     wikiRacer := NewWikiRacer(startURL, endURL)
-    path, err := wikiRacer.FindShortestPath()
+    path, waktuEksekusi ,err := wikiRacer.FindShortestPath()
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -113,7 +114,9 @@ func NewWikiRacer(startURL, endURL string) *WikiRacer {
 }
 
 // FindShortestPath finds the shortest path between start and end URLs using Bi-BFS
-func (wr *WikiRacer) FindShortestPath() ([]string, error) {
+func (wr *WikiRacer) FindShortestPath() ([]string, time.Duration, error) {
+	startTime := time.Now()
+
 	for len(wr.queueForward) > 0 && len(wr.queueBackward) > 0 {
 		// Forward BFS
 		currentForward := wr.queueForward[0]
@@ -129,13 +132,13 @@ func (wr *WikiRacer) FindShortestPath() ([]string, error) {
 
 		// Check for intersection
 		if intersectionNode, found := wr.checkIntersection(); found {
-			return wr.buildPath(intersectionNode), nil
+			return wr.buildPath(intersectionNode), time.Since(startTime), nil
 		}
 
 		// Expand forward BFS
 		linksForward, err := wr.fetchLinks(currentForward)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		for _, link := range linksForward {
 			if !wr.visitedForward[link] {
@@ -149,7 +152,7 @@ func (wr *WikiRacer) FindShortestPath() ([]string, error) {
 		// Expand backward BFS
 		linksBackward, err := wr.fetchLinks(currentBackward)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		for _, link := range linksBackward {
 			if !wr.visitedBackward[link] {
@@ -161,8 +164,9 @@ func (wr *WikiRacer) FindShortestPath() ([]string, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("no path found from %s to %s", wr.startURL, wr.endURL)
+	return nil, 0, fmt.Errorf("no path found from %s to %s", wr.startURL, wr.endURL)
 }
+
 
 // checkIntersection checks if there is an intersection between forward and backward BFS
 func (wr *WikiRacer) checkIntersection() (string, bool) {
