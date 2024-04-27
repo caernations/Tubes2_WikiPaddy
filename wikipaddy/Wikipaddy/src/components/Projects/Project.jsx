@@ -144,6 +144,7 @@ const Project = ({ theme, awal, akhir, bfs, ids, bibfs }) => {
         )}
       </div>
     </div>
+    
   );
 };
 
