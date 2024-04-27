@@ -36,7 +36,7 @@ func HandleRequestBFS(w http.ResponseWriter, r *http.Request) {
     endURL := "https://en.wikipedia.org/wiki/" + endTitle
 
     wikiRacer := NewWikiRacer(startURL, endURL)
-    path, waktuEksekusi , depth ,err := wikiRacer.FindShortestPath()
+    path, waktuEksekusi , depth , total,err := wikiRacer.FindShortestPath()
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -47,6 +47,7 @@ func HandleRequestBFS(w http.ResponseWriter, r *http.Request) {
 			"path":            path,
 			"waktu_eksekusi":  waktuEksekusi,
 			"kedalaman": depth,
+			"total": total,
 		},
 	)
 }
@@ -105,7 +106,7 @@ func NewWikiRacer(startURL, endURL string) *WikiRacer {
 	}
 }
 
-func (wr *WikiRacer) FindShortestPath() ([]string, float64, int,error) {
+func (wr *WikiRacer) FindShortestPath() ([]string, float64, int, int,error) {
 	startTime := time.Now()
 
 	for len(wr.queue) > 0 {
@@ -123,12 +124,12 @@ func (wr *WikiRacer) FindShortestPath() ([]string, float64, int,error) {
 		// fmt.Println("Path:", formatPath(path))
 
 		if currentPage == wr.endURL {
-			return wr.buildPath(), time.Since(startTime).Seconds(), len(path),nil
+			return wr.buildPath(), time.Since(startTime).Seconds(), len(path), wr.linksExamined,nil
 		}
 
 		links, err := wr.fetchLinks(currentPage)
 		if err != nil {
-			return nil, 0, 0, err
+			return nil, 0, 0, 0,err
 		}
 
 		for _, link := range links {
@@ -138,13 +139,13 @@ func (wr *WikiRacer) FindShortestPath() ([]string, float64, int,error) {
 				wr.queue = append(wr.queue, link)
 				wr.pathToLink[link] = currentPage
 				if link == wr.endURL {
-					return wr.buildPath(), time.Since(startTime).Seconds(), len(path), nil
+					return wr.buildPath(), time.Since(startTime).Seconds(), len(path), wr.linksExamined,nil
 				}
 			}
 		}
 	}
 
-	return nil, 0, 0, fmt.Errorf("no path found from %s to %s", wr.startURL, wr.endURL)
+	return nil, 0, 0, 0,fmt.Errorf("no path found from %s to %s", wr.startURL, wr.endURL)
 }
 
 

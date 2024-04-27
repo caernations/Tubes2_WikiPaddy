@@ -136,6 +136,7 @@ const Project = ({ theme, awal, akhir, bfs, ids, bibfs }) => {
                 <div className={`result-time ${theme}`}>
                   <p>TIME : {results.waktu_eksekusi} Seconds</p>
                   <p>DEPTH : {results.kedalaman}</p>
+                  <p>TOTAL LINKS : {results.total}</p>
                 </div>
               </div>
             </div>

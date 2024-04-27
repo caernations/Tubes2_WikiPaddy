@@ -38,7 +38,7 @@ func HandleRequestBiBFS(w http.ResponseWriter, r *http.Request) {
     endURL := "https://en.wikipedia.org/wiki/" + endTitle
 
     wikiRacer := NewWikiRacer(startURL, endURL)
-    path, waktuEksekusi, depth ,err := wikiRacer.FindShortestPath()
+    path, waktuEksekusi, depth ,total,err := wikiRacer.FindShortestPath()
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -49,6 +49,7 @@ func HandleRequestBiBFS(w http.ResponseWriter, r *http.Request) {
 			"path":            path,
 			"waktu_eksekusi":  waktuEksekusi,
 			"kedalaman": depth,
+			"total": total,
 		},
 	)
 }
@@ -120,7 +121,7 @@ func NewWikiRacer(startURL, endURL string) *WikiRacer {
 }
 
 // FindShortestPath finds the shortest path between start and end URLs using Bi-BFS
-func (wr *WikiRacer) FindShortestPath() ([]string, float64, int,error) {
+func (wr *WikiRacer) FindShortestPath() ([]string, float64, int,int,error) {
 	startTime := time.Now()
 
 	for len(wr.queueForward) > 0 && len(wr.queueBackward) > 0 {
@@ -138,13 +139,13 @@ func (wr *WikiRacer) FindShortestPath() ([]string, float64, int,error) {
 
 		// Check for intersection
 		if intersectionNode, found := wr.checkIntersection(); found {
-			return wr.buildPath(intersectionNode), time.Since(startTime).Seconds(), len(wr.buildPath(intersectionNode)),nil
+			return wr.buildPath(intersectionNode), time.Since(startTime).Seconds(), len(wr.buildPath(intersectionNode)),wr.linksExamined,nil
 		}
 
 		// Expand forward BFS
 		linksForward, err := wr.fetchLinks(currentForward)
 		if err != nil {
-			return nil, 0,0, err
+			return nil, 0,0, 0,err
 		}
 		for _, link := range linksForward {
 			if !wr.visitedForward[link] {
@@ -158,7 +159,7 @@ func (wr *WikiRacer) FindShortestPath() ([]string, float64, int,error) {
 		// Expand backward BFS
 		linksBackward, err := wr.fetchLinks(currentBackward)
 		if err != nil {
-			return nil, 0,0, err
+			return nil, 0,0, 0,err
 		}
 		for _, link := range linksBackward {
 			if !wr.visitedBackward[link] {
@@ -170,7 +171,7 @@ func (wr *WikiRacer) FindShortestPath() ([]string, float64, int,error) {
 		}
 	}
 
-	return nil, 0, 0,fmt.Errorf("no path found from %s to %s", wr.startURL, wr.endURL)
+	return nil, 0, 0,0,fmt.Errorf("no path found from %s to %s", wr.startURL, wr.endURL)
 }
 
 
