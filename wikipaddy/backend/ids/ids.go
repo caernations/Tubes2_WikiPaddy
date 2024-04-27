@@ -41,7 +41,7 @@ func HandleRequestIDS(w http.ResponseWriter, r *http.Request) {
     endURL := "https://en.wikipedia.org/wiki/" + endTitle
 
     wikiRacer := NewWikiRacerIDS(startURL, endURL)
-    path, waktuEksekusi ,err := wikiRacer.FindShortestPathUsingIDS()
+    path, waktuEksekusi, depth ,err := wikiRacer.FindShortestPathUsingIDS()
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -51,6 +51,7 @@ func HandleRequestIDS(w http.ResponseWriter, r *http.Request) {
 		map[string]interface{}{
 			"path":            path,
 			"waktu_eksekusi":  waktuEksekusi,
+			"kedalaman": depth,
 		},
 	)
 }
@@ -152,7 +153,7 @@ func (wr *WikiRacerIDS) depthLimitedSearch(currentURL string, depth int, path []
 	}
 }
 
-func (wr *WikiRacerIDS) FindShortestPathUsingIDS() ([]string, time.Duration, error) {
+func (wr *WikiRacerIDS) FindShortestPathUsingIDS() ([]string, float64, int,error) {
 	startTime := time.Now() // Waktu awal eksekusi
 
 	timeoutCh := make(chan time.Time)
@@ -160,7 +161,7 @@ func (wr *WikiRacerIDS) FindShortestPathUsingIDS() ([]string, time.Duration, err
 	for {
 		found, path := wr.depthLimitedSearch(wr.startURL, 0, []string{}, timeoutCh)
 		if found {
-			return path, time.Since(startTime), nil // Kembalikan jalur dan waktu eksekusi
+			return path, time.Since(startTime).Seconds(),len(path), nil // Kembalikan jalur dan waktu eksekusi
 		}
 		wr.maxDepth++
 		wr.visited = make(map[string]int) // Reset visited for the next iteration

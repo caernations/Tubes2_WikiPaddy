@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './About.css';
-import photo from '../../assets/photo1.jpg';
+import photo1 from '../../assets/photo1.jpg';
+import photo2 from '../../assets/photo2.jpg';
+import photo3 from '../../assets/photo3.jpg';
 
 const About = ({ theme }) => {
   const [titleFontSize, setTitleFontSize] = useState('100px');
@@ -40,7 +42,7 @@ const About = ({ theme }) => {
         <div className='card' onClick={() => flipCard(0)}>
           <div className={`front ${theme}`}>
             <div className='card-img'>
-              <img src={photo}/>
+              <img src={photo1}/>
             </div>
             <div className={`card-text ${theme}`}>
               <h3>13522140</h3>
@@ -48,14 +50,13 @@ const About = ({ theme }) => {
             </div>
           </div>
           <div className={`back ${theme}`}>
-            <h3>Back</h3>
-            <p>Back of the card content</p>
+            <p>stream ttpd !!</p>
           </div>
         </div>
         <div className='card' onClick={() => flipCard(1)}>
           <div className={`front ${theme}`}>
             <div className='card-img'>
-              <img src={photo}/>
+              <img src={photo2}/>
             </div>
             <div className={`card-text ${theme}`}>
               <h3>13522142</h3>
@@ -63,14 +64,16 @@ const About = ({ theme }) => {
             </div>
           </div>
           <div className={`back ${theme}`}>
-            <h3>Back</h3>
-            <p>Back of the card content</p>
+            <p>
+              si bobi sifatnya angkuh <br></br>
+              menyala abangkuhhh 
+            </p>
           </div>
         </div>
         <div className='card' onClick={() => flipCard(2)}>
           <div className={`front ${theme}`}>
             <div className='card-img'>
-              <img src={photo}/>
+              <img src={photo3}/>
             </div>
             <div className={`card-text ${theme}`}>
               <h3>13522156</h3>
@@ -78,8 +81,10 @@ const About = ({ theme }) => {
             </div>
           </div>
           <div className={`back ${theme}`}>
-            <h3>Back</h3>
-            <p>Back of the card content</p>
+            <p>
+              ikan hiu makan kedondong<br></br>
+              stima i love u dong
+            </p>
           </div>
         </div>
       </div>

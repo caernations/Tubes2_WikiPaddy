@@ -92,7 +92,7 @@ const What = ({ theme }) => {
         <div className={`text-p ${theme}`}>
           <TextWrapper>
             <p>
-              Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
+              Wikipaddy adalah sebuah projek dimana pengguna memberikan dua halaman Wikipedia yang berbeda dan wikipaddy akan mencari jalan terpendek untuk sampai dari satu halaman ke halaman lainnya hanya dengan mengikuti tautan-tautan dalam artikel tersebut. Tujuan dari proyek ini adalah untuk menguji kecepatan algoritma IDS dan BFS dalam menavigasi dan mencari informasi di Wikipedia.
             </p>
           </TextWrapper>
         </div>
@@ -104,7 +104,9 @@ const What = ({ theme }) => {
         </div>
         <div className={`how-to-use-text ${theme}`}>
               <p>
-                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
+                1. Masukan 2 judul wikipedia yang berbeda <br></br>
+                2. Pilih Algoritma antara IDS dan BFS <br></br>
+                3. Mulai pencarian dengan submit
               </p>
         </div>
       </div>

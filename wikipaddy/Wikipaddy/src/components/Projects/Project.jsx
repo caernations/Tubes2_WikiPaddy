@@ -133,7 +133,10 @@ const Project = ({ theme, awal, akhir, bfs, ids, bibfs }) => {
                   </ul>
                 </div>
                 <div className={`result-end-text ${theme}`}>{inputAkhir}</div>
-                <div className={`result-time ${theme}`}>TIME : {results.waktu_eksekusi} MS</div>
+                <div className={`result-time ${theme}`}>
+                  <p>TIME : {results.waktu_eksekusi} Seconds</p>
+                  <p>DEPTH : {results.kedalaman}</p>
+                </div>
               </div>
             </div>
           </div>
