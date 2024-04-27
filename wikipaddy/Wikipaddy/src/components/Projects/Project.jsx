@@ -126,7 +126,7 @@ const Project = ({ theme, awal, akhir, bfs, ids, bibfs }) => {
                 <div className={`result-algorithm ${theme}`}>{activeButton}</div>
                 <div className={`result-start-text ${theme}`}>{inputAwal}</div>
                 <div className={`result-path ${theme}`}>
-                  <ul className='result-list'>
+                  <ul className={`result-list ${theme}`}>
                     {results.path.map((path, index) => (
                       <li key={index}><a href={path}>{path}</a></li>
                     ))}

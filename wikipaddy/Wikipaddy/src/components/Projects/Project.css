@@ -374,11 +374,11 @@
 }
 
 .result-list.dark li a {
-    color: black;
+    color: white;
 }
 
 .result-list.dark li a:hover {
-    color: white;
+    color: black;
 }
 
 .result-list li a:hover {
