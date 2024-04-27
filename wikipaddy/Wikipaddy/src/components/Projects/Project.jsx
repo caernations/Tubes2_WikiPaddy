@@ -128,7 +128,7 @@ const Project = ({ theme, awal, akhir, bfs, ids, bibfs }) => {
                 <div className={`result-path ${theme}`}>
                   <ul className='result-list'>
                     {results.path.map((path, index) => (
-                      <li key={index}>{path}</li>
+                      <li key={index}><a href={path}>{path}</a></li>
                     ))}
                   </ul>
                 </div>

@@ -366,7 +366,23 @@
 
 .result-list li {
     margin-bottom: 1%;
+}
 
+.result-list li a {
+    text-decoration: none;
+    color: black;
+}
+
+.result-list.dark li a {
+    color: black;
+}
+
+.result-list.dark li a:hover {
+    color: white;
+}
+
+.result-list li a:hover {
+    color: white;
 }
 
 .result-path.dark {
