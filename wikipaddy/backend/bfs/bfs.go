@@ -42,7 +42,12 @@ func HandleRequestBFS(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    json.NewEncoder(w).Encode(path)
+    json.NewEncoder(w).Encode(
+		map[string]interface{}{
+			"path":            path,
+			"waktu_eksekusi":  waktuEksekusi,
+		},
+	)
 }
 
 func NewPageLinks() *PageLinks {

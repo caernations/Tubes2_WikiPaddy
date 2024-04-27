@@ -47,7 +47,12 @@ func HandleRequestIDS(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    json.NewEncoder(w).Encode(path)
+    json.NewEncoder(w).Encode(
+		map[string]interface{}{
+			"path":            path,
+			"waktu_eksekusi":  waktuEksekusi,
+		},
+	)
 }
 
 func NewWikiRacerIDS(startURL, endURL string) *WikiRacerIDS {

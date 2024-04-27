@@ -43,8 +43,8 @@ const About = ({ theme }) => {
               <img src={photo}/>
             </div>
             <div className={`card-text ${theme}`}>
-              <h3>13522001</h3>
-              <p>Stima Mantap</p>
+              <h3>13522140</h3>
+              <p>Yasmin Farisah Salma</p>
             </div>
           </div>
           <div className={`back ${theme}`}>
@@ -58,8 +58,8 @@ const About = ({ theme }) => {
               <img src={photo}/>
             </div>
             <div className={`card-text ${theme}`}>
-              <h3>13522002</h3>
-              <p>Stima Excellent</p>
+              <h3>13522142</h3>
+              <p>Farhan Raditya Aji</p>
             </div>
           </div>
           <div className={`back ${theme}`}>
@@ -73,8 +73,8 @@ const About = ({ theme }) => {
               <img src={photo}/>
             </div>
             <div className={`card-text ${theme}`}>
-              <h3>13522003</h3>
-              <p>Stima Awesome</p>
+              <h3>13522156</h3>
+              <p>Jason Fernando</p>
             </div>
           </div>
           <div className={`back ${theme}`}>

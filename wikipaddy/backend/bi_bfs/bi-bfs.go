@@ -6,14 +6,44 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"encoding/json"
 
 	"github.com/PuerkitoBio/goquery"
+	// "github.com/gorilla/mux"
+    // "github.com/rs/cors"
 )
 
 // PageLinks represents a mapping from a page to its links
 type PageLinks struct {
 	mu    sync.Mutex
 	links map[string][]string
+}
+
+type Request struct {
+    StartURL string `json:"start_url"`
+    EndURL   string `json:"end_url"`
+}
+
+func HandleRequestBiBFS(w http.ResponseWriter, r *http.Request) {
+    startTitle := r.URL.Query().Get("start_title")
+    endTitle := r.URL.Query().Get("end_title")
+
+    if startTitle == "" || endTitle == "" {
+        http.Error(w, "start_title and end_title are required", http.StatusBadRequest)
+        return
+    }
+
+    startURL := "https://en.wikipedia.org/wiki/" + startTitle
+    endURL := "https://en.wikipedia.org/wiki/" + endTitle
+
+    wikiRacer := NewWikiRacer(startURL, endURL)
+    path, err := wikiRacer.FindShortestPath()
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    json.NewEncoder(w).Encode(path)
 }
 
 // NewPageLinks creates a new PageLinks instance
